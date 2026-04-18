@@ -8,23 +8,66 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check if user is logged in (could be a /verify-token endpoint)
-    // For now, we'll check localStorage for basic persistence
-    const savedUser = localStorage.getItem("user");
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-    }
-    setLoading(false);
+    const initializeAuth = async () => {
+      try {
+        const savedUser = localStorage.getItem("user");
+        if (savedUser) {
+          // Verify session with server on load
+          const data = await apiClient("/api/v1/auth/validate-token");
+          if (data.valid) {
+            // Re-fetch profile to ensure UI data is fresh
+            await fetchProfile();
+          }
+        }
+      } catch (error) {
+        console.error("Session validation failed on startup:", error);
+        // api() wrapper handles the refresh or error
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    initializeAuth();
   }, []);
+
+  const fetchProfile = async () => {
+    try {
+      const data = await apiClient("/api/v1/customer/profile");
+      const userData = data.data;
+      setUser(userData);
+      localStorage.setItem("user", JSON.stringify(userData));
+      return userData;
+    } catch (error) {
+      console.error("Fetch profile error:", error);
+      // If unauthorized, logout
+      if (error.message?.includes("unauthorized") || error.status === 401) {
+        logout();
+      }
+    }
+  };
+
+  const updateProfile = async (fullName) => {
+    try {
+      const data = await apiClient("/api/v1/customer/update-profile", {
+        method: "PATCH",
+        body: JSON.stringify({ fullName }),
+      });
+      setUser(data.data);
+      localStorage.setItem("user", JSON.stringify(data.data));
+      return data.data;
+    } catch (error) {
+      throw error;
+    }
+  };
 
   const login = async (email, password) => {
     try {
-      const data = await apiClient("/login", {
+      const data = await apiClient("/api/v1/customer/login", {
         method: "POST",
-        body: JSON.stringify({ email, password, user_type: 3 }),
+        body: JSON.stringify({ email, password, role: 3 }),
       });
       
-      const userData = data.data.user || data.data; // Depending on backend structure
+      const userData = data.data.customer || data.data.user || data.data;
       setUser(userData);
       localStorage.setItem("user", JSON.stringify(userData));
       return data;
@@ -35,7 +78,7 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (fullName, email, password) => {
     try {
-      const data = await apiClient("/register-customer", {
+      const data = await apiClient("/api/v1/customer/register", {
         method: "POST",
         body: JSON.stringify({ fullName, email, password }),
       });
@@ -45,14 +88,55 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const googleLogin = async (credential) => {
+    try {
+      const data = await apiClient("/api/v1/customer/google-login", {
+        method: "POST",
+        body: JSON.stringify({ tokenID: credential }),
+      });
+      
+      const userData = data.data.customer || data.data.user || data.data;
+      setUser(userData);
+      localStorage.setItem("user", JSON.stringify(userData));
+      return data;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const sendOtp = async (email) => {
+    try {
+      const data = await apiClient("/api/v1/customer/send-otp", {
+        method: "POST",
+        body: JSON.stringify({ email }),
+      });
+      return data;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const verifyOtp = async (email, otp) => {
+    try {
+      const data = await apiClient("/api/v1/customer/verify-otp", {
+        method: "POST",
+        body: JSON.stringify({ email, otp }),
+      });
+
+      const userData = data.data.customer || data.data.user || data.data;
+      setUser(userData);
+      localStorage.setItem("user", JSON.stringify(userData));
+      return data;
+    } catch (error) {
+      throw error;
+    }
+  };
+
   const logout = async () => {
     try {
-      if (user?.email) {
-        await apiClient("/api/UserLogout", {
-          method: "POST",
-          body: JSON.stringify({ email: user.email }),
-        });
-      }
+      await apiClient("/api/v1/customer/logout", {
+        method: "POST",
+      });
     } catch (error) {
       console.error("Logout error:", error);
     } finally {
@@ -62,7 +146,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, register, googleLogin, sendOtp, verifyOtp, logout }}>
       {children}
     </AuthContext.Provider>
   );

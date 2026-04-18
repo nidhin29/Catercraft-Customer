@@ -3,8 +3,10 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import OTPVerify from "./pages/OTPVerify";
 import Home from "./pages/Home";
 import Dashboard from "./pages/Dashboard";
+import Profile from "./pages/Profile";
 import Navbar from "./components/Navbar";
 
 const PrivateRoute = ({ children }) => {
@@ -22,8 +24,10 @@ const AppContent = () => {
       <Routes>
         <Route path="/login" element={!user ? <Login /> : <Navigate to="/" />} />
         <Route path="/register" element={!user ? <Register /> : <Navigate to="/" />} />
+        <Route path="/verify-otp" element={<OTPVerify />} />
         <Route path="/" element={<Home />} />
         <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+        <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
       </Routes>
     </div>
   );

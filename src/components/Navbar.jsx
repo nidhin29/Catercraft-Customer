@@ -32,8 +32,8 @@ const Navbar = () => {
       >
         {/* LOGO */}
         <Link to="/" className="flex items-center gap-2 group">
-          <div className="w-10 h-10 bg-primary/20 rounded-xl flex items-center justify-center border border-primary/30 group-hover:bg-primary/30 transition-all">
-            <UtensilsCrossed className="text-primary w-6 h-6" />
+          <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center border border-white/10 group-hover:bg-primary/20 transition-all overflow-hidden p-1">
+            <img src="/logo.png" alt="CaterCraft Logo" className="w-full h-full object-contain" />
           </div>
           <span className="text-xl font-black tracking-tighter bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">
             CaterCraft
@@ -69,10 +69,10 @@ const Navbar = () => {
         <div className="flex items-center gap-4">
           {user ? (
             <div className="flex items-center gap-3 pl-6 border-l border-white/10">
-              <div className="hidden md:block text-right">
-                <p className="text-xs font-black text-white">{user.fullName}</p>
-                <p className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Customer</p>
-              </div>
+              <Link to="/profile" className="hidden md:block text-right group">
+                <p className="text-xs font-black text-white group-hover:text-primary transition-colors">{user.fullName}</p>
+                <p className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Account Settings</p>
+              </Link>
               <button 
                 onClick={handleLogout}
                 className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-gray-400 hover:bg-red-500/10 hover:text-red-500 transition-all"

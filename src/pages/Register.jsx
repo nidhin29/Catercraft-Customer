@@ -10,7 +10,7 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const { register } = useAuth();
+  const { register, sendOtp } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -19,8 +19,8 @@ const Register = () => {
     setLoading(true);
     try {
       await register(fullName, email, password);
-      // After registration, suggest login or auto-login
-      navigate("/login");
+      // Backend automatically sends OTP during registration
+      navigate(`/verify-otp?email=${encodeURIComponent(email)}`);
     } catch (err) {
       setError(err.message || "Registration failed");
     } finally {

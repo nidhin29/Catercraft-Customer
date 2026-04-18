@@ -8,12 +8,14 @@ import Footer from "../components/Footer";
 import ServiceProfileModal from "../components/ServiceProfileModal";
 import { 
   Search, SlidersHorizontal, Calendar, X, Loader2, CheckCircle2, 
-  ArrowRight, Users, Trophy, Star, ShieldCheck, Utensils
+  ArrowRight, ChevronRight, Trophy, Star, ShieldCheck, Utensils
 } from "lucide-react";
 
 const Home = () => {
   const { user } = useAuth();
-  const { data: services, loading, error } = useFetch("/Customer/view-all-services");
+  const { data: services, loading, error } = useFetch("/api/v1/booking/Customer/view-all-services");
+  const { data: reviews, loading: reviewsLoading } = useFetch("/api/v1/review/featured");
+  
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedService, setSelectedService] = useState(null);
   const [isBooking, setIsBooking] = useState(false);
@@ -22,78 +24,13 @@ const Home = () => {
   const [bookingSuccess, setBookingSuccess] = useState(false);
   const [activeCategory, setActiveCategory] = useState("All");
 
-  const DUMMY_SERVICES = [
-    {
-      _id: "dummy-1",
-      service_name: "Royal Wedding Feast",
-      rate: 1499,
-      duration: "8 Hours",
-      description: "A truly regal experience for your wedding day. Our royal wedding feast includes an exquisite multi-course dinner with live cooking stations, dedicated butlers, and a master chef overseeing every detail of your celebration. From delicate amuse-bouches to spectacular dessert spreads, we craft an unforgettable culinary journey.",
-      owner_email: "signature.platters@catercraft.in",
-      imageUrl: "https://images.unsplash.com/photo-1519225421980-715cb0215aed?q=80&w=800"
-    },
-    {
-      _id: "dummy-2",
-      service_name: "Corporate Excellence Summit",
-      rate: 899,
-      duration: "5 Hours",
-      description: "Impress clients and colleagues alike with our premium corporate catering designed for executive summits and high-stakes business gatherings. Features a sophisticated international cold buffet, finger food stations, and artisan coffee bar.",
-      owner_email: "executive.bites@catercraft.in",
-      imageUrl: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?q=80&w=800"
-    },
-    {
-      _id: "dummy-3",
-      service_name: "Gourmet Birthday Party",
-      rate: 650,
-      duration: "4 Hours",
-      description: "Turn any birthday celebration into a gourmet affair. Our party package includes themed food stations, interactive dessert counters, handcrafted mocktails and a personalised celebration cake from our award-winning pastry team.",
-      owner_email: "festive.tables@catercraft.in",
-      imageUrl: "https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?q=80&w=800"
-    },
-    {
-      _id: "dummy-4",
-      service_name: "Global Cuisine Experience",
-      rate: 1200,
-      duration: "6 Hours",
-      description: "Travel the world through taste at your event. Our global cuisine experience brings together the finest international culinary traditions — from Italian antipasti to Japanese teppanyaki, Mexican street food to French patisserie — all curated by our world-traveled chef collective.",
-      owner_email: "worldkitchen@catercraft.in",
-      imageUrl: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=800"
-    },
-    {
-      _id: "dummy-5",
-      service_name: "Bridal Cocktail Evening",
-      rate: 980,
-      duration: "5 Hours",
-      description: "Celebrate love in style with our intimate bridal cocktail evening package. Features a curated selection of premium canapés, artisan cocktails and mocktails, and an elegant grazing table designed to delight your guests all evening long.",
-      owner_email: "signature.platters@catercraft.in",
-      imageUrl: "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=800"
-    },
-    {
-      _id: "dummy-6",
-      service_name: "Executive Boardroom Lunch",
-      rate: 550,
-      duration: "2 Hours",
-      description: "A refined and time-efficient catering solution for executive decision-makers. Our boardroom lunch delivers a curated three-course meal with precision service — allowing your team to focus on what truly matters while we handle the rest.",
-      owner_email: "executive.bites@catercraft.in",
-      imageUrl: "https://images.unsplash.com/photo-1547573854-74d2a71d0826?q=80&w=800"
-    },
-  ];
-
-  const allServices = [...(services || []), ...(services?.length ? [] : DUMMY_SERVICES)];
-
-  const filteredServices = allServices.filter(s => {
-    const matchesSearch = s.service_name.toLowerCase().includes(searchTerm.toLowerCase());
+  const filteredServices = services?.filter(s => {
+    const matchesSearch = s.service_name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                          (s.description || "").toLowerCase().includes(searchTerm.toLowerCase());
+    
     if (activeCategory === "All") return matchesSearch;
     
-    const content = (s.service_name + " " + (s.description || "")).toLowerCase();
-    const keywords = {
-      Wedding: ["wedding", "marriage", "royal", "bridal"],
-      Corporate: ["corporate", "office", "business", "summit", "formal", "executive", "boardroom"],
-      Parties: ["party", "celebration", "birthday", "soiree", "anniversary", "cocktail"],
-      Global: ["global", "international", "cuisine", "world", "continental", "chinese", "italian"]
-    }[activeCategory] || [];
-    
-    return matchesSearch && keywords.some(k => content.includes(k));
+    return matchesSearch && s.service_group?.toLowerCase() === activeCategory.toLowerCase();
   });
 
   const handleBook = async (e) => {
@@ -104,7 +41,7 @@ const Home = () => {
     }
     setBookingLoading(true);
     try {
-      await apiClient("/Customer/book-service", {
+      await apiClient("/api/v1/booking/Customer/book-service", {
         method: "POST",
         body: JSON.stringify({
           service_id: selectedService._id,
@@ -116,6 +53,7 @@ const Home = () => {
       setTimeout(() => {
         setBookingSuccess(false);
         setSelectedService(null);
+        setIsBooking(false);
       }, 3000);
     } catch (err) {
       alert(err.message || "Booking failed");
@@ -124,16 +62,10 @@ const Home = () => {
     }
   };
 
-
   const steps = [
     { title: "Select Service", desc: "Browse through our curated list of premium caterers.", icon: Search },
     { title: "Choose Date", desc: "Select your event date and get an instant quote.", icon: Calendar },
     { title: "Confirm & Pay", desc: "Pay a secure deposit to block the caterer's calendar.", icon: ShieldCheck },
-  ];
-
-  const testimonials = [
-    { name: "Arjun Mehta", role: "Event Architect", text: "The quality of caterers on CaterCraft is unmatched. Truly premium services.", stars: 5 },
-    { name: "Sarah Khan", role: "Marketing Head", text: "Seamless booking process for our annual corporate gala. 10/10 would recommend.", stars: 5 },
   ];
 
   return (
@@ -180,8 +112,6 @@ const Home = () => {
           </motion.div>
         </section>
 
-
-
         {/* MARKETPLACE GRID */}
         <section className="mb-24 mt-12 pt-12 border-t border-white/5" id="explore">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-12">
@@ -223,6 +153,12 @@ const Home = () => {
               <p className="text-accent mb-4">{error}</p>
               <button onClick={() => window.location.reload()} className="text-primary hover:underline">Try Again</button>
             </div>
+          ) : filteredServices?.length === 0 ? (
+            <div className="text-center py-20 glass-card">
+              <Utensils className="w-16 h-16 text-gray-600 mx-auto mb-4" />
+              <h3 className="text-xl font-bold mb-2">No services found</h3>
+              <p className="text-gray-500">Try adjusting your filters or search term.</p>
+            </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredServices?.map((service) => (
@@ -244,58 +180,54 @@ const Home = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[
-              { 
-                name: "Anjali Sharma", 
-                role: "Wedding Architect", 
-                text: "The Signature Platters' molecular gastronomy was the talk of our wedding. Truly world-class services that redefined the event.",
-                event: "Signature Wedding"
-              },
-              { 
-                name: "David Miller", 
-                role: "Operations Head", 
-                text: "Professional, punctual, and most importantly—divine taste. CaterCraft for our corporate summit was a game changer.",
-                event: "Annual Business Summit"
-              },
-              { 
-                name: "Priya Kapoor", 
-                role: "Food Critic", 
-                text: "An absolute masterclass in flavor and presentation. The attention to detail provided for our soirée was breathtaking.",
-                event: "Luxury Soirée"
-              }
-            ].map((review, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1 }}
-                viewport={{ once: true }}
-                className="glass-card p-8 flex flex-col relative overflow-hidden group border-white/5"
-              >
-                <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity">
-                  <Utensils className="w-20 h-20 rotate-12" />
-                </div>
-                
-                <p className="text-lg italic text-gray-300 font-medium leading-relaxed mb-8 relative z-10">
-                  "{review.text}"
-                </p>
+            {reviewsLoading ? (
+              [1, 2, 3].map(i => <div key={i} className="glass-card h-64 animate-pulse bg-white/5" />)
+            ) : reviews?.length > 0 ? (
+              reviews.map((review, i) => (
+                <motion.div
+                  key={review._id || i}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.1 }}
+                  viewport={{ once: true }}
+                  className="glass-card p-8 flex flex-col relative overflow-hidden group border-white/5"
+                >
+                  <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity">
+                    <Utensils className="w-20 h-20 rotate-12" />
+                  </div>
+                  
+                  <p className="text-lg italic text-gray-300 font-medium leading-relaxed mb-8 relative z-10">
+                    "{review.message}"
+                  </p>
 
-                <div className="mt-auto flex items-center justify-between relative z-10">
-                  <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center font-black text-xs text-white">
-                      {review.name.charAt(0)}
+                  <div className="mt-auto flex items-center justify-between relative z-10">
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center font-black text-xs text-white uppercase">
+                        {review.customer?.fullName?.charAt(0) || "U"}
+                      </div>
+                      <div>
+                        <h4 className="font-bold text-sm text-white">{review.customer?.fullName || "Verified User"}</h4>
+                        <div className="flex items-center gap-1 text-[10px] text-primary">
+                          {[...Array(5)].map((_, starIndex) => (
+                            <Star 
+                              key={starIndex} 
+                              className={`w-2 h-2 ${starIndex < review.rating ? "fill-primary" : "fill-transparent text-gray-600"}`} 
+                            />
+                          ))}
+                        </div>
+                      </div>
                     </div>
-                    <div>
-                      <h4 className="font-bold text-sm text-white">{review.name}</h4>
-                      <p className="text-[10px] text-gray-500 font-black uppercase tracking-widest">{review.role}</p>
+                    <div className="text-[10px] font-black text-primary uppercase tracking-tighter px-2 py-1 bg-primary/10 rounded border border-primary/20">
+                      {review.service?.service_name || "Premium Experience"}
                     </div>
                   </div>
-                  <div className="text-[10px] font-black text-primary uppercase tracking-tighter px-2 py-1 bg-primary/10 rounded border border-primary/20">
-                    {review.event}
-                  </div>
-                </div>
-              </motion.div>
-            ))}
+                </motion.div>
+              ))
+            ) : (
+              <div className="col-span-full text-center py-10 text-gray-500">
+                Be the first to share your experience!
+              </div>
+            )}
           </div>
         </section>
 

@@ -3,13 +3,14 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
 import { LogIn, Mail, Lock, Loader2 } from "lucide-react";
+import { GoogleLogin } from "@react-oauth/google";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const { login, googleLogin } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -21,6 +22,19 @@ const Login = () => {
       navigate("/");
     } catch (err) {
       setError(err.message || "Invalid credentials");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleSuccess = async (response) => {
+    setError("");
+    setLoading(true);
+    try {
+      await googleLogin(response.credential);
+      navigate("/");
+    } catch (err) {
+      setError(err.message || "Google login failed");
     } finally {
       setLoading(false);
     }
@@ -96,6 +110,23 @@ const Login = () => {
             {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Sign In"}
           </button>
         </form>
+
+        <div className="my-6 flex items-center gap-4">
+          <div className="flex-1 h-px bg-white/10" />
+          <span className="text-xs text-gray-500 font-bold uppercase tracking-widest">or</span>
+          <div className="flex-1 h-px bg-white/10" />
+        </div>
+
+        <div className="flex justify-center">
+          <GoogleLogin
+            onSuccess={handleGoogleSuccess}
+            onError={() => setError("Google login failed")}
+            theme="filled_black"
+            shape="pill"
+            text="continue_with"
+            width="100%"
+          />
+        </div>
 
         <p className="mt-8 text-center text-gray-400 text-sm">
           Don't have an account?{" "}

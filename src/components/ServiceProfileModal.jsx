@@ -7,18 +7,12 @@ const ServiceProfileModal = ({ service, onClose, onBookInit }) => {
 
   const heroImage = service.imageUrl || "https://images.unsplash.com/photo-1555244162-803834f70033?q=80&w=1200";
 
-  const mockMenu = [
-    { cat: "Starters", items: ["Truffle Arancini", "Gourmet Mezze Platter", "Smoked Salmon Crostini"] },
-    { cat: "Main Course", items: ["Herb-Crusted Rack of Lamb", "Porcini Mushroom Risotto", "Hand-Crafted Pasta Bar"] },
-    { cat: "Desserts", items: ["Deconstructed Tiramisu", "Artisan Gelato Station"] },
-  ];
+  const starters = service.menu?.starters || [];
+  const mainCourse = service.menu?.main_course || [];
+  const desserts = service.menu?.desserts || [];
+  const inclusions = service.whats_included || [];
 
-  const inclusions = [
-    "Premium Cutlery & Linen",
-    "Uniformed Service Staff",
-    "Professional Setup & Cleanup",
-    "On-Site Chef Coordination",
-  ];
+  const hasGastronomy = starters.length > 0 || mainCourse.length > 0 || desserts.length > 0;
 
   return (
     <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 md:p-8">
@@ -86,47 +80,57 @@ const ServiceProfileModal = ({ service, onClose, onBookInit }) => {
           )}
 
           {/* Menu */}
-          <div>
-            <div className="flex items-center gap-2 mb-6">
-              <Utensils className="w-4 h-4 text-primary" />
-              <h3 className="text-xs font-black uppercase tracking-widest text-white">The Gastronomy</h3>
+          {hasGastronomy && (
+            <div>
+              <div className="flex items-center gap-2 mb-6">
+                <Utensils className="w-4 h-4 text-primary" />
+                <h3 className="text-xs font-black uppercase tracking-widest text-white">The Gastronomy</h3>
+              </div>
+              <div className="space-y-6">
+                {[
+                  { label: "Starters", items: starters },
+                  { label: "Main Course", items: mainCourse },
+                  { label: "Desserts", items: desserts },
+                ]
+                  .filter((section) => section.items.length > 0)
+                  .map((section, i) => (
+                    <div key={i}>
+                      <p className="flex items-center gap-1.5 text-[10px] font-black text-primary uppercase tracking-widest mb-3">
+                        <ChevronRight className="w-3 h-3" /> {section.label}
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {section.items.map((item, j) => (
+                          <span
+                            key={j}
+                            className="px-3 py-1.5 bg-white/5 border border-white/8 rounded-lg text-sm text-gray-400"
+                          >
+                            {item}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+              </div>
             </div>
-            <div className="space-y-6">
-              {mockMenu.map((m, i) => (
-                <div key={i}>
-                  <p className="flex items-center gap-1.5 text-[10px] font-black text-primary uppercase tracking-widest mb-3">
-                    <ChevronRight className="w-3 h-3" /> {m.cat}
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {m.items.map((item, j) => (
-                      <span
-                        key={j}
-                        className="px-3 py-1.5 bg-white/5 border border-white/8 rounded-lg text-sm text-gray-400"
-                      >
-                        {item}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+          )}
 
           {/* Inclusions */}
-          <div>
-            <div className="flex items-center gap-2 mb-5">
-              <Info className="w-4 h-4 text-primary" />
-              <h3 className="text-xs font-black uppercase tracking-widest text-white">What's Included</h3>
+          {inclusions.length > 0 && (
+            <div>
+              <div className="flex items-center gap-2 mb-5">
+                <Info className="w-4 h-4 text-primary" />
+                <h3 className="text-xs font-black uppercase tracking-widest text-white">What's Included</h3>
+              </div>
+              <ul className="grid grid-cols-2 gap-3">
+                {inclusions.map((item, i) => (
+                  <li key={i} className="flex items-center gap-2 text-sm text-gray-400">
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
             </div>
-            <ul className="grid grid-cols-2 gap-3">
-              {inclusions.map((item, i) => (
-                <li key={i} className="flex items-center gap-2 text-sm text-gray-400">
-                  <span className="w-1.5 h-1.5 rounded-full bg-primary flex-shrink-0" />
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </div>
+          )}
 
           {/* Extra bottom padding so content clears the sticky bar */}
           <div className="h-4" />
