@@ -25,6 +25,7 @@ const Register = () => {
       setError(err.message || "Registration failed");
     } finally {
       setLoading(false);
+      
     }
   };
 
