@@ -1,16 +1,69 @@
-# React + Vite
+# 🍽️ CaterCraft | Customer Portal
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+[![Deploy to S3](https://github.com/nidhin29/customer-website/actions/workflows/deploy.yml/badge.svg)](https://github.com/nidhin29/customer-website/actions/workflows/deploy.yml)
 
-Currently, two official plugins are available:
+**CaterCraft** is a premium, full-stack catering management ecosystem. This repository contains the **Customer Portal**, a high-performance web application designed for a seamless booking and event management experience.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+## ✨ Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- 🔐 **Secure Authentication**: Integrated with Google OAuth and custom OTP verification.
+- 💳 **Seamless Payments**: Integrated with Razorpay for secure production-ready digital payments.
+- 🚚 **Live Tracking**: Real-time booking tracking using Socket.io and Firebase Cloud Messaging (FCM).
+- 🎨 **Premium UI**: Built with React.js, Tailwind CSS, and Framer Motion for smooth animations and a "glassmorphism" aesthetic.
+- 📱 **Responsive Design**: Fully optimized for mobile, tablet, and desktop views.
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 🚀 Tech Stack
+
+- **Frontend**: [React.js](https://reactjs.org/) + [Vite](https://vitejs.dev/)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
+- **Animations**: [Framer Motion](https://www.framer.com/motion/)
+- **State Management**: React Context API + Custom Hooks
+- **Communication**: [Socket.io](https://socket.io/) (Real-time updates)
+- **Deployment**: AWS S3 & CloudFront
+
+---
+
+## 🛠️ Installation & Setup
+
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/nidhin29/customer-website.git
+   cd customer-website
+   ```
+
+2. **Install dependencies**:
+   ```bash
+   npm install
+   ```
+
+3. **Configure Environment Variables**:
+   Create a `.env` file in the root directory and add your keys (see `.env.example` if available).
+
+4. **Run Development Server**:
+   ```bash
+   npm run dev
+   ```
+
+---
+
+## 🏗️ Architecture & CI/CD
+
+This project follows modern DevOps practices to ensure high availability and rapid deployment:
+
+- **Hosting**: Static assets are hosted on **AWS S3**.
+- **CDN**: **AWS CloudFront** is used for global content delivery and HTTPS termination.
+- **Automation**: **GitHub Actions** pipelines handle automated builds, S3 syncing, and CloudFront cache invalidation on every push to `main`.
+
+---
+
+## 📄 License
+
+Distributed under the MIT License. See `LICENSE` for more information.
+
+---
+
+*Developed with ❤️ by [Nidhin](https://github.com/nidhin29)*
