@@ -192,7 +192,7 @@ const Dashboard = () => {
   };
 
   const getStatusInfo = (workStatus, paymentStatus) => {
-    if (workStatus === "Finished") return { label: "Completed", color: "text-purple-500 bg-purple-500/10 border-purple-500/20" };
+    if (workStatus === "Completed") return { label: "Completed", color: "text-purple-500 bg-purple-500/10 border-purple-500/20" };
     if (paymentStatus === "Paid") return { label: "Confirmed", color: "text-green-500 bg-green-500/10 border-green-500/20" };
     switch (workStatus) {
       case "Approved": return { label: "Approved", color: "text-blue-500 bg-blue-500/10 border-blue-500/20" };
@@ -285,7 +285,7 @@ const Dashboard = () => {
                           </>
                         )}
                       </button>
-                    ) : booking.work_status === "Finished" && booking.payment_status === "Paid" ? (
+                    ) : booking.work_status === "Completed" && booking.payment_status === "Paid" ? (
                       <button
                         onClick={() => setReviewingBooking(booking)}
                         className="glass-button py-2 px-6 text-xs flex items-center gap-2 border-primary/50 text-primary hover:bg-primary/10"
