@@ -105,6 +105,20 @@ const Register = () => {
             </motion.p>
           )}
 
+          <div className="flex items-start gap-3 px-1">
+            <input 
+              type="checkbox" 
+              required 
+              id="terms"
+              className="mt-1 w-4 h-4 rounded border-white/10 bg-white/5 text-primary focus:ring-primary/50"
+            />
+            <label htmlFor="terms" className="text-xs text-gray-400 leading-relaxed">
+              By creating an account, you agree to our{" "}
+              <Link to="/legal" className="text-primary hover:underline">Terms of Service</Link> and{" "}
+              <Link to="/legal" className="text-primary hover:underline">Privacy Policy</Link>.
+            </label>
+          </div>
+
           <button
             type="submit"
             disabled={loading}

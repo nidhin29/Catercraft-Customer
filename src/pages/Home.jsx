@@ -248,6 +248,12 @@ const Home = () => {
                 >
                   Get Started
                 </Link>
+                <Link 
+                  to="/legal" 
+                  className="glass-card bg-transparent border-white/20 px-10 h-14 hover:bg-white/5 transition-colors flex items-center justify-center font-bold text-sm"
+                >
+                  Our Policies
+                </Link>
               </div>
             </div>
           </div>
