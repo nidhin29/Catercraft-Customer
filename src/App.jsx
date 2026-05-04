@@ -7,6 +7,7 @@ import OTPVerify from "./pages/OTPVerify";
 import Home from "./pages/Home";
 import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
+import Legal from "./pages/Legal";
 import Navbar from "./components/Navbar";
 
 const PrivateRoute = ({ children }) => {
@@ -28,6 +29,7 @@ const AppContent = () => {
         <Route path="/" element={<Home />} />
         <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
         <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
+        <Route path="/legal" element={<Legal />} />
       </Routes>
     </div>
   );

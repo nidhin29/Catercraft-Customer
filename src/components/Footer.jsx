@@ -1,5 +1,6 @@
 import React from "react";
-import { UtensilsCrossed, Mail, Phone, MapPin } from "lucide-react";
+import { UtensilsCrossed, Mail, Phone, MapPin, ShieldCheck, Scale, AlertCircle } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
@@ -25,10 +26,19 @@ const Footer = () => {
         <div className="flex flex-col items-center">
           <h4 className="text-lg font-bold mb-6">Quick Links</h4>
           <ul className="space-y-4 text-gray-400 text-center">
-            <li><a href="#" className="hover:text-primary transition-colors">Explore Services</a></li>
-            <li><a href="#" className="hover:text-primary transition-colors">How it Works</a></li>
-            <li><a href="#" className="hover:text-primary transition-colors">Become a Partner</a></li>
-            <li><a href="#" className="hover:text-primary transition-colors">Corporate Solutions</a></li>
+            <li><Link to="/" className="hover:text-primary transition-colors">Home</Link></li>
+            <li><Link to="/#services" className="hover:text-primary transition-colors">Explore Services</Link></li>
+            <li><Link to="/dashboard" className="hover:text-primary transition-colors">My Bookings</Link></li>
+            <li><Link to="/profile" className="hover:text-primary transition-colors">Profile Settings</Link></li>
+          </ul>
+        </div>
+
+        <div className="flex flex-col items-center">
+          <h4 className="text-lg font-bold mb-6">Legal</h4>
+          <ul className="space-y-4 text-gray-400 text-center">
+            <li><Link to="/legal" className="hover:text-primary transition-colors flex items-center gap-2 justify-center"><Scale className="w-4 h-4" /> Terms of Use</Link></li>
+            <li><Link to="/legal" className="hover:text-primary transition-colors flex items-center gap-2 justify-center"><ShieldCheck className="w-4 h-4" /> Privacy Policy</Link></li>
+            <li><Link to="/legal" className="hover:text-primary transition-colors flex items-center gap-2 justify-center"><AlertCircle className="w-4 h-4" /> Cancellation</Link></li>
           </ul>
         </div>
 
