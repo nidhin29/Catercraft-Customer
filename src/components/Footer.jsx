@@ -38,7 +38,6 @@ const Footer = () => {
           <ul className="space-y-4 text-gray-400 text-center">
             <li><Link to="/legal" className="hover:text-primary transition-colors flex items-center gap-2 justify-center"><Scale className="w-4 h-4" /> Terms of Use</Link></li>
             <li><Link to="/legal" className="hover:text-primary transition-colors flex items-center gap-2 justify-center"><ShieldCheck className="w-4 h-4" /> Privacy Policy</Link></li>
-            <li><Link to="/legal" className="hover:text-primary transition-colors flex items-center gap-2 justify-center"><AlertCircle className="w-4 h-4" /> Cancellation</Link></li>
           </ul>
         </div>
 

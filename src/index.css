@@ -9,6 +9,8 @@
   --color-accent: #f43f5e;
   
   --backdrop-blur-xs: 2px;
+  
+  --background-image-glass-gradient: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0) 100%);
 }
 
 @layer base {

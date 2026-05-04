@@ -45,20 +45,6 @@ const Legal = () => {
           p: "We implement industry-standard security measures, including HTTPS encryption and secure token-based authentication to protect your information."
         }
       ]
-    },
-    cancellation: {
-      title: "Cancellation Policy",
-      icon: <RefreshCw className="w-5 h-5" />,
-      content: [
-        {
-          h: "Customer Cancellations",
-          p: "Cancellations made 72 hours before the event are eligible for a 90% refund. Within 48 hours, a 50% refund is applicable. No refunds are provided for cancellations within 24 hours of the event."
-        },
-        {
-          h: "Partner Cancellations",
-          p: "In the rare event that a catering partner cancels, a full 100% refund will be issued to the customer immediately, or an alternative partner will be offered."
-        }
-      ]
     }
   };
 
