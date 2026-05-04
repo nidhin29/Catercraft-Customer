@@ -286,13 +286,19 @@ const Dashboard = () => {
                         )}
                       </button>
                     ) : booking.work_status === "Completed" && booking.payment_status === "Paid" ? (
-                      <button
-                        onClick={() => setReviewingBooking(booking)}
-                        className="py-2 px-6 text-xs flex items-center justify-center gap-2 bg-primary text-white rounded-full font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20"
-                      >
-                        <Star className="w-4 h-4 fill-white" />
-                        <span>Rate Service</span>
-                      </button>
+                      booking.isReviewed ? (
+                        <div className="flex items-center gap-1 font-bold text-xs text-primary bg-primary/10 px-4 py-2 rounded-full border border-primary/20">
+                          <CheckCircle2 className="w-4 h-4" /> Reviewed
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => setReviewingBooking(booking)}
+                          className="py-2 px-6 text-xs flex items-center justify-center gap-2 bg-primary text-white rounded-full font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20"
+                        >
+                          <Star className="w-4 h-4 fill-white" />
+                          <span>Rate Service</span>
+                        </button>
+                      )
                     ) : (
                       <div className={`flex items-center gap-1 font-bold text-xs ${booking.payment_status === "Paid" ? "text-green-500" : "text-gray-500"}`}>
                         {booking.payment_status === "Paid" ? (
