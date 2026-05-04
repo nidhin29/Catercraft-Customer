@@ -34,14 +34,6 @@ const Footer = () => {
         </div>
 
         <div className="flex flex-col items-center">
-          <h4 className="text-lg font-bold mb-6">Legal</h4>
-          <ul className="space-y-4 text-gray-400 text-center">
-            <li><Link to="/legal" className="hover:text-primary transition-colors flex items-center gap-2 justify-center"><Scale className="w-4 h-4" /> Terms of Use</Link></li>
-            <li><Link to="/legal" className="hover:text-primary transition-colors flex items-center gap-2 justify-center"><ShieldCheck className="w-4 h-4" /> Privacy Policy</Link></li>
-          </ul>
-        </div>
-
-        <div className="flex flex-col items-center">
           <h4 className="text-lg font-bold mb-6">Contact Us</h4>
           <ul className="space-y-4 text-gray-400">
             <li className="flex items-center gap-3 justify-center">
