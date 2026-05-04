@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Link } from "react-router-dom";
 import useFetch from "../hooks/useFetch";
 import { useAuth } from "../context/AuthContext";
 import apiClient from "../api/apiClient";
@@ -241,8 +242,18 @@ const Home = () => {
                 Join thousands of customers who trust CaterCraft for their most important events.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <button className="glass-button bg-white text-black hover:bg-white/90 px-10 h-14">Get Started</button>
-                <button className="glass-card bg-transparent border-white/20 px-10 h-14 hover:bg-white/5 transition-colors">Our Policies</button>
+                <Link 
+                  to={user ? "/dashboard" : "/register"} 
+                  className="glass-button bg-white text-black hover:bg-white/90 px-10 h-14 flex items-center justify-center font-black uppercase tracking-widest text-xs"
+                >
+                  Get Started
+                </Link>
+                <Link 
+                  to="/legal" 
+                  className="glass-card bg-transparent border-white/20 px-10 h-14 hover:bg-white/5 transition-colors flex items-center justify-center font-bold text-sm"
+                >
+                  Our Policies
+                </Link>
               </div>
             </div>
           </div>
