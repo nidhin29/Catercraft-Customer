@@ -12,16 +12,12 @@ export const AuthProvider = ({ children }) => {
       try {
         const savedUser = localStorage.getItem("user");
         if (savedUser) {
-          // Verify session with server on load
-          const data = await apiClient("/api/v1/auth/validate-token");
-          if (data.valid) {
-            // Re-fetch profile to ensure UI data is fresh
-            await fetchProfile();
-          }
+          // Attempt to fetch fresh profile data on load
+          // apiClient will handle silent refresh if the token is expired
+          await fetchProfile();
         }
       } catch (error) {
-        console.error("Session validation failed on startup:", error);
-        // api() wrapper handles the refresh or error
+        console.error("Session initialization failed:", error);
       } finally {
         setLoading(false);
       }
