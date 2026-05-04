@@ -4,15 +4,108 @@ import { useAuth } from "../context/AuthContext";
 import apiClient from "../api/apiClient";
 import {
   Clock, CheckCircle2, XCircle, CreditCard,
-  ExternalLink, Loader2, ArrowRight, Package
+  ExternalLink, Loader2, ArrowRight, Package, Star, MessageSquare
 } from "lucide-react";
 import { io } from "socket.io-client";
+
+const ReviewModal = ({ booking, onClose, onSuccess }) => {
+  const [rating, setRating] = useState(5);
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await apiClient("/api/v1/review/add", {
+        method: "POST",
+        body: JSON.stringify({
+          booking_id: booking._id,
+          rating,
+          message
+        })
+      });
+      onSuccess();
+      onClose();
+    } catch (err) {
+      alert(err.message || "Failed to submit review");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 flex items-center justify-center px-4 bg-black/60 backdrop-blur-sm"
+    >
+      <motion.div
+        initial={{ scale: 0.9, y: 20 }}
+        animate={{ scale: 1, y: 0 }}
+        className="glass-card max-w-md w-full p-8 relative"
+      >
+        <button onClick={onClose} className="absolute top-4 right-4 text-gray-500 hover:text-white">
+          <XCircle className="w-6 h-6" />
+        </button>
+
+        <div className="text-center mb-8">
+          <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4 border border-primary/30">
+            <MessageSquare className="text-primary w-8 h-8" />
+          </div>
+          <h2 className="text-2xl font-bold">Rate Your Experience</h2>
+          <p className="text-gray-400 text-sm mt-1">{booking.service?.service_name}</p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="flex justify-center gap-2">
+            {[1, 2, 3, 4, 5].map((star) => (
+              <button
+                key={star}
+                type="button"
+                onClick={() => setRating(star)}
+                className="transition-transform active:scale-90"
+              >
+                <Star
+                  className={`w-8 h-8 ${
+                    star <= rating ? "fill-primary text-primary" : "text-gray-600"
+                  }`}
+                />
+              </button>
+            ))}
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">Your Feedback</label>
+            <textarea
+              required
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              placeholder="How was the food and service?"
+              className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-sm focus:outline-none focus:border-primary/50 min-h-[120px] resize-none"
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full glass-button py-4 bg-white text-black font-bold hover:bg-white/90 flex items-center justify-center gap-2"
+          >
+            {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Submit Review"}
+          </button>
+        </form>
+      </motion.div>
+    </motion.div>
+  );
+};
 
 const Dashboard = () => {
   const { user } = useAuth();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [payLoading, setPayLoading] = useState(null);
+  const [reviewingBooking, setReviewingBooking] = useState(null);
 
   const fetchBookings = async () => {
     try {
@@ -99,10 +192,10 @@ const Dashboard = () => {
   };
 
   const getStatusInfo = (workStatus, paymentStatus) => {
+    if (workStatus === "Finished") return { label: "Completed", color: "text-purple-500 bg-purple-500/10 border-purple-500/20" };
     if (paymentStatus === "Paid") return { label: "Confirmed", color: "text-green-500 bg-green-500/10 border-green-500/20" };
     switch (workStatus) {
       case "Approved": return { label: "Approved", color: "text-blue-500 bg-blue-500/10 border-blue-500/20" };
-      case "Finished": return { label: "Completed", color: "text-purple-500 bg-purple-500/10 border-purple-500/20" };
       default: return { label: "Pending Review", color: "text-yellow-500 bg-yellow-500/10 border-yellow-500/20" };
     }
   };
@@ -192,10 +285,18 @@ const Dashboard = () => {
                           </>
                         )}
                       </button>
+                    ) : booking.work_status === "Finished" && booking.payment_status === "Paid" ? (
+                      <button
+                        onClick={() => setReviewingBooking(booking)}
+                        className="glass-button py-2 px-6 text-xs flex items-center gap-2 border-primary/50 text-primary hover:bg-primary/10"
+                      >
+                        <Star className="w-4 h-4" />
+                        Rate Service
+                      </button>
                     ) : (
                       <div className={`flex items-center gap-1 font-bold text-xs ${booking.payment_status === "Paid" ? "text-green-500" : "text-gray-500"}`}>
                         {booking.payment_status === "Paid" ? (
-                          <><CheckCircle2 className="w-4 h-4" /> Done</>
+                          <><CheckCircle2 className="w-4 h-4" /> Paid</>
                         ) : (
                           <><Clock className="w-4 h-4" /> Processing</>
                         )}
@@ -208,6 +309,19 @@ const Dashboard = () => {
           </AnimatePresence>
         </div>
       )}
+
+      <AnimatePresence>
+        {reviewingBooking && (
+          <ReviewModal
+            booking={reviewingBooking}
+            onClose={() => setReviewingBooking(null)}
+            onSuccess={() => {
+              alert("Thank you for your review!");
+              fetchBookings();
+            }}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };
