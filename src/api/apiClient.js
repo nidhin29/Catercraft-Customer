@@ -22,9 +22,9 @@ const apiClient = async (endpoint, options = {}) => {
     const response = await fetch(url, config);
     
     // Handle 401 Unauthorized by attempting a silent refresh
-    if (response.status === 401 && endpoint !== "/api/v1/user/auth/refresh-token") {
+    if (response.status === 401 && !endpoint.includes("/refresh-token")) {
       try {
-        const refreshResponse = await fetch(`${BASE_URL}/api/v1/auth/refresh-token`, {
+        const refreshResponse = await fetch(`${BASE_URL}/api/v1/customer/refresh-token`, {
           method: "POST",
           credentials: "include",
           headers: { "Content-Type": "application/json" }
